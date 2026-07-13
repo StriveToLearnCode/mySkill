@@ -1,0 +1,20 @@
+{
+  "name": "myskill",
+  "version": "1.0.0",
+  "description": "<!--  Copyright 2026 wepie",
+  "main": "index.js",
+  "scripts": {
+    "zip": "./scripts/zip-skill.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StriveToLearnCode/mySkill.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/StriveToLearnCode/mySkill/issues"
+  },
+  "homepage": "https://github.com/StriveToLearnCode/mySkill#readme"
+}

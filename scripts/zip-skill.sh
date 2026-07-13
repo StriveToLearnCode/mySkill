@@ -1,32 +1,42 @@
 #!/usr/bin/env bash
 set -e
 
-# 执行脚本时传进去的第一个参数，例如 frontend-dev-coach
-SKILL_NAME="$1"
-
-# 如果没有传 Skill 名称，就提示正确用法并退出
-if [ -z "$SKILL_NAME" ]; then
-  echo "用法: ./scripts/zip-skill.sh frontend-dev-coach"
-  exit 1
-fi
-
-# 检查 Skill 文件夹是否存在
-if [ ! -d "skills/$SKILL_NAME" ]; then
-  echo "找不到 skills/$SKILL_NAME"
-  exit 1
-fi
-
-# 创建 dist 文件夹；如果已存在，不会报错
 mkdir -p dist
 
-# 进入 skills 目录，这样 zip 里不会多一层 skills/
-cd skills
+zip_skill() {
+  local skill_name="$1"
 
-# 把 Skill 文件夹压缩到 dist 目录
-zip -r "../dist/$SKILL_NAME.zip" "$SKILL_NAME"
+  if [ ! -d "skills/$skill_name" ]; then
+    echo "找不到 skills/$skill_name"
+    exit 1
+  fi
 
-# 回到仓库根目录
-cd ..
+  (
+    cd skills
+    zip -rqFS "../dist/$skill_name.zip" "$skill_name" \
+      -x "*/.DS_Store" "*/__pycache__/*"
+  )
 
-# 输出成功提示
-echo "已生成: dist/$SKILL_NAME.zip"
+  echo "已生成: dist/$skill_name.zip"
+}
+
+if [ "$#" -gt 0 ]; then
+  for skill_name in "$@"; do
+    zip_skill "$skill_name"
+  done
+  exit 0
+fi
+
+found_skill=false
+
+for skill_dir in skills/*/; do
+  [ -d "$skill_dir" ] || continue
+  found_skill=true
+  skill_name="${skill_dir%/}"
+  zip_skill "${skill_name##*/}"
+done
+
+if [ "$found_skill" = false ]; then
+  echo "skills/ 下没有可打包的 Skill"
+  exit 1
+fi
